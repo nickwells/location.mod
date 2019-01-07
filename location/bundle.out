@@ -1,0 +1,341 @@
+#!/bin/bash
+# -*- ksh -*-
+
+# This is a shell script that contains a number of files as HERE-scripts within
+
+if [ "$1" = "-list" ] ; then
+    echo chain.go
+    echo chain_test.go
+    echo err.go
+    echo err_test.go
+    echo loc.go
+    echo loc_test.go
+    echo loop.go
+    echo loop_test.go
+    exit
+fi
+if [ "$1" = "-help" ]
+then
+    echo "usage: ./bundle.out -help           prints this message"
+    echo "       ./bundle.out -list           lists the constituent files but does not unbundle them"
+    echo "       ./bundle.out                 reconstructs the constituent files (unbundles them)"
+    exit
+fi
+
+# To rename files change the second filename in the move line below and
+# uncomment the line. You will also need to change the filename where it
+# appears below
+
+# mv chain.go chain.go
+# mv chain_test.go chain_test.go
+# mv err.go err.go
+# mv err_test.go err_test.go
+# mv loc.go loc.go
+# mv loc_test.go loc_test.go
+# mv loop.go loop.go
+# mv loop_test.go loop_test.go
+
+# =======================================================================
+# start of files
+# =======================================================================
+
+echo "unbundling           chain.go"
+sed 's/^    # //' << 'End of chain.go' > chain.go
+    # package location
+    # 
+    # // LocChain represents a chain of locations. This might be used to record a
+    # // string of included files.
+    # type LocChain []L
+    # 
+    # // NewChain returns a new (empty but non-nil) instance of a LocChain
+    # func NewChain() LocChain {
+    # 	return make(LocChain, 0)
+    # }
+    # 
+    # // String provides a string representing a LocChain
+    # func (lc LocChain) String() string {
+    # 	var chainDesc string
+    # 	sep := ""
+    # 	for _, l := range lc {
+    # 		chainDesc += sep + l.String()
+    # 		sep = " --> "
+    # 	}
+    # 	return chainDesc
+    # }
+End of chain.go
+
+echo "unbundling           chain_test.go"
+sed 's/^    # //' << 'End of chain_test.go' > chain_test.go
+    # package location_test
+    # 
+    # import (
+    # 	"github.com/nickwells/location.mod/location"
+    # 	"testing"
+    # )
+    # 
+    # func TestChainDesc(t *testing.T) {
+    # 	fl1 := location.New("test1")
+    # 	fl2 := location.New("test2")
+    # 	fl3 := location.New("test3")
+    # 
+    # 	includeChain := location.LocChain{*fl1, *fl2, *fl3}
+    # 
+    # 	expectedChainDesc := "test1:0 --> test2:0 --> test3:0"
+    # 	if s := includeChain.String(); s != expectedChainDesc {
+    # 		t.Error("the string representing the chain should be: '" +
+    # 			expectedChainDesc + "', is: '" + s + "'")
+    # 	}
+    # }
+End of chain_test.go
+
+echo "unbundling           err.go"
+sed 's/^    # //' << 'End of err.go' > err.go
+    # package location
+    # 
+    # // Err wraps a message and a location into a single struct
+    # // this allows for a more structured error message
+    # type Err struct {
+    # 	Msg string
+    # 	Loc L
+    # }
+    # 
+    # func (e Err) Error() string {
+    # 	return e.Msg + " (at " + e.Loc.String() + ")"
+    # }
+End of err.go
+
+echo "unbundling           err_test.go"
+sed 's/^    # //' << 'End of err_test.go' > err_test.go
+    # package location
+    # 
+    # import "testing"
+    # 
+    # func TestError(t *testing.T) {
+    # 	loc := New("test")
+    # 	testCases := []struct {
+    # 		testName string
+    # 		e        Err
+    # 		expStr   string
+    # 	}{
+    # 		{
+    # 			testName: "nil",
+    # 			expStr:   " (at :0)",
+    # 		},
+    # 		{
+    # 			testName: "no Loc",
+    # 			e: Err{
+    # 				Msg: "no Loc",
+    # 			},
+    # 			expStr: "no Loc (at :0)",
+    # 		},
+    # 		{
+    # 			testName: "with Loc",
+    # 			e: Err{
+    # 				Msg: "Msg",
+    # 				Loc: *loc,
+    # 			},
+    # 			expStr: "Msg (at test:0)",
+    # 		},
+    # 	}
+    # 
+    # 	for i, tc := range testCases {
+    # 		e := tc.e
+    # 		if s := e.Error(); s != tc.expStr {
+    # 			t.Errorf(
+    # 				"test %d: %s : e.Error() should have returned '%s' not '%s'",
+    # 				i, tc.testName, tc.expStr, s)
+    # 		}
+    # 	}
+    # 
+    # }
+End of err_test.go
+
+echo "unbundling           loc.go"
+sed 's/^    # //' << 'End of loc.go' > loc.go
+    # package location
+    # 
+    # import "fmt"
+    # 
+    # // L represents a location - a named source and the index into that source.
+    # // For instance, this might be used to represent a file and a line number or
+    # // a database table and a row number. You can also record the content of the
+    # // location but this is not done routinely and so is only reported if it has
+    # // been set. Similarly you can add a note to the location and this is only
+    # // reported if it is not empty.
+    # type L struct {
+    # 	name       string
+    # 	idx        int64
+    # 	hasContent bool
+    # 	content    string
+    # 	note       string
+    # }
+    # 
+    # // New returns a new instance of a location
+    # func New(name string) *L {
+    # 	return &L{name: name}
+    # }
+    # 
+    # // String provides the string representing a location
+    # func (l L) String() string {
+    # 	var s string
+    # 	if l.note != "" {
+    # 		s = "[ " + l.note + " ]: "
+    # 	}
+    # 	s += fmt.Sprintf("%s:%d", l.name, l.idx)
+    # 	if l.hasContent {
+    # 		s += ": " + l.content
+    # 	}
+    # 
+    # 	return s
+    # }
+    # 
+    # // Incr increments the location index and marks the location as having no
+    # // content
+    # func (l *L) Incr() {
+    # 	l.idx++
+    # 	l.hasContent = false
+    # }
+    # 
+    # // Idx returns the current index value
+    # func (l L) Idx() int64 {
+    # 	return l.idx
+    # }
+    # 
+    # // SetContent sets the content and marks the location as having content
+    # func (l *L) SetContent(s string) {
+    # 	l.content = s
+    # 	l.hasContent = true
+    # }
+    # 
+    # // SetNote sets the notes field on the location
+    # func (l *L) SetNote(s string) {
+    # 	l.note = s
+    # }
+    # 
+    # // Errorf constructs a location Err setting the Msg to the results of
+    # // formatting the arguments and the Loc to the location
+    # func (l L) Errorf(s string, args ...interface{}) Err {
+    # 	return Err{
+    # 		Msg: fmt.Sprintf(s, args...),
+    # 		Loc: l,
+    # 	}
+    # }
+    # 
+    # // Error constructs a location Err setting the Msg to the passed value and
+    # // the Loc to the location
+    # func (l L) Error(s string) Err {
+    # 	return Err{
+    # 		Msg: s,
+    # 		Loc: l,
+    # 	}
+    # }
+End of loc.go
+
+echo "unbundling           loc_test.go"
+sed 's/^    # //' << 'End of loc_test.go' > loc_test.go
+    # package location_test
+    # 
+    # import (
+    # 	"github.com/nickwells/location.mod/location"
+    # 	"testing"
+    # )
+    # 
+    # func TestLocString(t *testing.T) {
+    # 	l := location.New("test1")
+    # 	expectedStr := "test1:0"
+    # 	if s := l.String(); s != expectedStr {
+    # 		t.Error("the string represening the location should be: '" +
+    # 			expectedStr + "', is: '" + s + "'")
+    # 	}
+    # 
+    # 	l.Incr()
+    # 	expectedStr = "test1:1"
+    # 	if s := l.String(); s != expectedStr {
+    # 		t.Error(
+    # 			"after Incr the string representing the location should be: '" +
+    # 				expectedStr + "', is: '" + s + "'")
+    # 	}
+    # }
+End of loc_test.go
+
+echo "unbundling           loop.go"
+sed 's/^    # //' << 'End of loop.go' > loop.go
+    # package location
+    # 
+    # // HasLoop checks to see if the name already appears in the LocChain which
+    # // records the chain of sources getting to this point. If a loop is detected
+    # // then this returns true and a description of the path taken to get to the
+    # // loop, otherwise it returns false and an empty string.
+    # func (chain LocChain) HasLoop(name string) (bool, string) {
+    # 	var loopDesc string
+    # 	incl := " --> "
+    # 	var loopDetected bool
+    # 	for _, l := range chain {
+    # 		if l.name == name {
+    # 			loopDetected = true
+    # 			incl = " ==> "
+    # 		}
+    # 		loopDesc += l.String() + incl
+    # 	}
+    # 	if loopDetected {
+    # 		loopDesc += "Back to " + name
+    # 		return true, loopDesc
+    # 	}
+    # 	return false, ""
+    # }
+End of loop.go
+
+echo "unbundling           loop_test.go"
+sed 's/^    # //' << 'End of loop_test.go' > loop_test.go
+    # package location_test
+    # 
+    # import (
+    # 	"fmt"
+    # 	"github.com/nickwells/location.mod/location"
+    # 	"testing"
+    # )
+    # 
+    # func TestHasLoop(t *testing.T) {
+    # 	l1 := location.New("f1")
+    # 	l2 := location.New("f2")
+    # 	l3 := location.New("f3")
+    # 
+    # 	type hasLoopTest struct {
+    # 		name             string
+    # 		chain            location.LocChain
+    # 		expectedHasLoop  bool
+    # 		expectedLoopDesc string
+    # 	}
+    # 
+    # 	testCases := []hasLoopTest{
+    # 		{
+    # 			name:             "f2",
+    # 			chain:            location.LocChain{*l1, *l2, *l3},
+    # 			expectedHasLoop:  true,
+    # 			expectedLoopDesc: "f1:0 --> f2:0 ==> f3:0 ==> Back to f2",
+    # 		},
+    # 		{
+    # 			name:             "notInIncludeChain",
+    # 			chain:            location.LocChain{*l1, *l2, *l3},
+    # 			expectedHasLoop:  false,
+    # 			expectedLoopDesc: "",
+    # 		},
+    # 	}
+    # 
+    # 	for _, hlt := range testCases {
+    # 		testID := fmt.Sprintf("HasLoop('%s', %s)",
+    # 			hlt.name, hlt.chain)
+    # 		hasLoop, loopDesc := hlt.chain.HasLoop(hlt.name)
+    # 		if hasLoop != hlt.expectedHasLoop {
+    # 			t.Logf("%s: failed\n", testID)
+    # 			t.Logf("\t : expected: %v\n", hlt.expectedHasLoop)
+    # 			t.Errorf("\t :      got: %v\n", hasLoop)
+    # 		}
+    # 		if loopDesc != hlt.expectedLoopDesc {
+    # 			t.Logf("%s: failed\n", testID)
+    # 			t.Logf("\t : expected loop description: %v\n", hlt.expectedLoopDesc)
+    # 			t.Errorf("\t :                       got: %v\n", loopDesc)
+    # 		}
+    # 	}
+    # }
+End of loop_test.go
