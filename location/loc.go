@@ -47,6 +47,11 @@ func (l L) Idx() int64 {
 	return l.idx
 }
 
+// Source returns the named source
+func (l L) Source() string {
+	return l.name
+}
+
 // SetContent sets the content and marks the location as having content
 func (l *L) SetContent(s string) {
 	l.content = s
