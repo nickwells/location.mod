@@ -38,34 +38,66 @@ func TestLocString(t *testing.T) {
 	checkStr(t, "after third Incr", "[ note ]: test1:3", l.String())
 }
 
-// checkSrcIdx confirms that the string is as expected and prints an error if
-// not
-func checkSrcIdx(t *testing.T, name, expSrc, src string, expIdx, idx int64) {
+// checkLocContents confirms that the string is as expected and prints an
+// error if not
+func checkLocContents(t *testing.T, loc *location.L,
+	testID, src, note, content string, hasContent bool, idx int64) {
 	t.Helper()
-	if src != expSrc {
-		t.Log(name)
-		t.Log("\t: source should be: '" + expSrc + "'")
-		t.Log("\t: source       was: '" + src + "'")
-		t.Error("\t: unexpected Source() of the location")
+	if src != loc.Source() {
+		t.Log(testID)
+		t.Log("\t: source should be: '" + src + "'")
+		t.Log("\t: source       was: '" + loc.Source() + "'")
+		t.Error("\t: unexpected Source()")
 	}
-	if idx != expIdx {
-		t.Log(name)
-		t.Logf("\t: idx should be: %d", expIdx)
-		t.Logf("\t: idx       was: %d", idx)
-		t.Error("\t: unexpected Idx() of the location")
+	if idx != loc.Idx() {
+		t.Log(testID)
+		t.Logf("\t: idx should be: %d", idx)
+		t.Logf("\t: idx       was: %d", loc.Idx())
+		t.Error("\t: unexpected Idx()")
+	}
+	if note != loc.Note() {
+		t.Log(testID)
+		t.Logf("\t: note should be: '%s'", note)
+		t.Logf("\t: note       was: '%s'", loc.Note())
+		t.Error("\t: unexpected Note()")
+	}
+	c, hc := loc.Content()
+	if hasContent && !hc {
+		t.Log(testID)
+		t.Error("\t: content was expected but missing")
+	} else if !hasContent && hc {
+		t.Log(testID)
+		t.Log("\t: unexpected content: " + c)
+		t.Error("\t: content was set unexpectedly")
+	} else if hasContent {
+		if c != content {
+			t.Log(testID)
+			t.Logf("\t: content should be: '%s'", content)
+			t.Logf("\t: content       was: '%s'", c)
+			t.Error("\t: unexpected content")
+		}
 	}
 }
 
 func TestLoc(t *testing.T) {
 	src := "test1"
 	l := location.New(src)
-	checkSrcIdx(t, "Initially", src, l.Source(), 0, l.Idx())
+	checkLocContents(t, l, "Initially", src, "", "", false, 0)
 
 	l.Incr()
-	checkSrcIdx(t, "After first Incr", src, l.Source(), 1, l.Idx())
+	checkLocContents(t, l, "1st Incr", src, "", "", false, 1)
 
 	l.Incr()
-	checkSrcIdx(t, "After second Incr", src, l.Source(), 2, l.Idx())
+	checkLocContents(t, l, "2nd Incr", src, "", "", false, 2)
+
+	l.SetNote("note")
+	checkLocContents(t, l, "After note set", src, "note", "", false, 2)
+
+	l.SetContent("content")
+	checkLocContents(t, l, "After content set", src, "note", "content", true, 2)
+
+	l.Incr()
+	checkLocContents(t, l, "3rd Incr", src, "note", "", false, 3)
 }
 
 // checkErr confirms that the string is as expected and prints an error if

@@ -52,13 +52,23 @@ func (l L) Source() string {
 	return l.name
 }
 
+// Note returns the note field
+func (l L) Note() string {
+	return l.note
+}
+
+// Content returns the content field and the hasContent flag
+func (l L) Content() (string, bool) {
+	return l.content, l.hasContent
+}
+
 // SetContent sets the content and marks the location as having content
 func (l *L) SetContent(s string) {
 	l.content = s
 	l.hasContent = true
 }
 
-// SetNote sets the notes field on the location
+// SetNote sets the note field on the location
 func (l *L) SetNote(s string) {
 	l.note = s
 }
