@@ -1,27 +1,31 @@
 package location
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/nickwells/testhelper.mod/testhelper"
+)
 
 func TestError(t *testing.T) {
 	loc := New("test")
 	testCases := []struct {
-		testName string
-		e        Err
-		expStr   string
+		testhelper.ID
+		e      Err
+		expStr string
 	}{
 		{
-			testName: "nil",
-			expStr:   " (at :0)",
+			ID:     testhelper.MkID("nil"),
+			expStr: " (at :0)",
 		},
 		{
-			testName: "no Loc",
+			ID: testhelper.MkID("no Loc"),
 			e: Err{
 				Msg: "no Loc",
 			},
 			expStr: "no Loc (at :0)",
 		},
 		{
-			testName: "with Loc",
+			ID: testhelper.MkID("with Loc"),
 			e: Err{
 				Msg: "Msg",
 				Loc: *loc,
@@ -30,12 +34,11 @@ func TestError(t *testing.T) {
 		},
 	}
 
-	for i, tc := range testCases {
-		e := tc.e
-		if s := e.Error(); s != tc.expStr {
-			t.Errorf(
-				"test %d: %s : e.Error() should have returned '%s' not '%s'",
-				i, tc.testName, tc.expStr, s)
+	for _, tc := range testCases {
+		if s := tc.e.Error(); s != tc.expStr {
+			t.Log(tc.IDStr())
+			t.Errorf("\t: e.Error() should have returned '%s' not '%s'",
+				tc.expStr, s)
 		}
 	}
 

@@ -2,8 +2,10 @@ package location_test
 
 import (
 	"fmt"
-	"github.com/nickwells/location.mod/location"
 	"testing"
+
+	"github.com/nickwells/location.mod/location"
+	"github.com/nickwells/testhelper.mod/testhelper"
 )
 
 func TestHasLoop(t *testing.T) {
@@ -11,41 +13,44 @@ func TestHasLoop(t *testing.T) {
 	l2 := location.New("f2")
 	l3 := location.New("f3")
 
-	type hasLoopTest struct {
-		name             string
-		chain            location.LocChain
-		expectedHasLoop  bool
-		expectedLoopDesc string
-	}
+	chain := location.LocChain{*l1, *l2, *l3}
 
-	testCases := []hasLoopTest{
+	testCases := []struct {
+		testhelper.ID
+		locName     string
+		chain       location.LocChain
+		expHasLoop  bool
+		expLoopDesc string
+	}{
 		{
-			name:             "f2",
-			chain:            location.LocChain{*l1, *l2, *l3},
-			expectedHasLoop:  true,
-			expectedLoopDesc: "f1:0 --> f2:0 ==> f3:0 ==> Back to f2",
+			ID:          testhelper.MkID("loop expected"),
+			locName:     "f2",
+			chain:       chain,
+			expHasLoop:  true,
+			expLoopDesc: "f1:0 --> f2:0 ==> f3:0 ==> Back to f2",
 		},
 		{
-			name:             "notInIncludeChain",
-			chain:            location.LocChain{*l1, *l2, *l3},
-			expectedHasLoop:  false,
-			expectedLoopDesc: "",
+			ID:      testhelper.MkID("loop not expected"),
+			locName: "notInIncludeChain",
+			chain:   chain,
 		},
 	}
 
-	for _, hlt := range testCases {
-		testID := fmt.Sprintf("HasLoop('%s', %s)",
-			hlt.name, hlt.chain)
-		hasLoop, loopDesc := hlt.chain.HasLoop(hlt.name)
-		if hasLoop != hlt.expectedHasLoop {
-			t.Logf("%s: failed\n", testID)
-			t.Logf("\t : expected: %v\n", hlt.expectedHasLoop)
-			t.Errorf("\t :      got: %v\n", hasLoop)
+	for _, tc := range testCases {
+		testDesc := fmt.Sprintf("HasLoop('%s', %s)",
+			tc.locName, tc.chain)
+		hasLoop, loopDesc := tc.chain.HasLoop(tc.locName)
+		if hasLoop != tc.expHasLoop {
+			t.Log(tc.IDStr())
+			t.Logf("\t : expected: %v\n", tc.expHasLoop)
+			t.Logf("\t :      got: %v\n", hasLoop)
+			t.Error("\t: " + testDesc)
 		}
-		if loopDesc != hlt.expectedLoopDesc {
-			t.Logf("%s: failed\n", testID)
-			t.Logf("\t : expected loop description: %v\n", hlt.expectedLoopDesc)
-			t.Errorf("\t :                       got: %v\n", loopDesc)
+		if loopDesc != tc.expLoopDesc {
+			t.Log(tc.IDStr())
+			t.Logf("\t : expected loop description: %v\n", tc.expLoopDesc)
+			t.Logf("\t :                       got: %v\n", loopDesc)
+			t.Error("\t: " + testDesc)
 		}
 	}
 }
