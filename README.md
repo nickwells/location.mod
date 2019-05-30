@@ -1,3 +1,6 @@
+[![GoDoc](https://godoc.org/github.com/nickwells/location.mod?status.png)](https://godoc.org/github.com/nickwells/location.mod)
+
+
 # location.mod
 A standard way of recording an indexed location in some source. For instance a line in a file.
 
