@@ -25,7 +25,7 @@ func New(name string) *L {
 func (l L) String() string {
 	var s string
 	if l.note != "" {
-		s = "[ " + l.note + " ]: "
+		s = "[" + l.note + "]: "
 	}
 	s += fmt.Sprintf("%s:%d", l.name, l.idx)
 	if l.hasContent {
@@ -59,7 +59,10 @@ func (l L) Note() string {
 
 // Content returns the content field and the hasContent flag
 func (l L) Content() (string, bool) {
-	return l.content, l.hasContent
+	if !l.hasContent {
+		return "", false
+	}
+	return l.content, true
 }
 
 // SetContent sets the content and marks the location as having content

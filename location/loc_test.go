@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/nickwells/location.mod/location"
+	"github.com/nickwells/testhelper.mod/testhelper"
 )
 
 // checkStr confirms that the string is as expected and prints an error if
@@ -32,10 +33,10 @@ func TestLocString(t *testing.T) {
 	checkStr(t, "after second Incr", "test1:2", l.String())
 
 	l.SetNote("note")
-	checkStr(t, "after SetNote", "[ note ]: test1:2", l.String())
+	checkStr(t, "after SetNote", "[note]: test1:2", l.String())
 
 	l.Incr() // Incr should not affect the notes
-	checkStr(t, "after third Incr", "[ note ]: test1:3", l.String())
+	checkStr(t, "after third Incr", "[note]: test1:3", l.String())
 }
 
 // checkLocContents confirms that the string is as expected and prints an
@@ -43,40 +44,13 @@ func TestLocString(t *testing.T) {
 func checkLocContents(t *testing.T, loc *location.L,
 	testID, src, note, content string, hasContent bool, idx int64) {
 	t.Helper()
-	if src != loc.Source() {
-		t.Log(testID)
-		t.Log("\t: source should be: '" + src + "'")
-		t.Log("\t: source       was: '" + loc.Source() + "'")
-		t.Error("\t: unexpected Source()")
-	}
-	if idx != loc.Idx() {
-		t.Log(testID)
-		t.Logf("\t: idx should be: %d", idx)
-		t.Logf("\t: idx       was: %d", loc.Idx())
-		t.Error("\t: unexpected Idx()")
-	}
-	if note != loc.Note() {
-		t.Log(testID)
-		t.Logf("\t: note should be: '%s'", note)
-		t.Logf("\t: note       was: '%s'", loc.Note())
-		t.Error("\t: unexpected Note()")
-	}
+
+	testhelper.DiffString(t, "loc: "+testID, "source", loc.Source(), src)
+	testhelper.DiffInt64(t, "loc: "+testID, "idx", loc.Idx(), idx)
+	testhelper.DiffString(t, "loc: "+testID, "note", loc.Note(), note)
 	c, hc := loc.Content()
-	if hasContent && !hc {
-		t.Log(testID)
-		t.Error("\t: content was expected but missing")
-	} else if !hasContent && hc {
-		t.Log(testID)
-		t.Log("\t: unexpected content: " + c)
-		t.Error("\t: content was set unexpectedly")
-	} else if hasContent {
-		if c != content {
-			t.Log(testID)
-			t.Logf("\t: content should be: '%s'", content)
-			t.Logf("\t: content       was: '%s'", c)
-			t.Error("\t: unexpected content")
-		}
-	}
+	testhelper.DiffBool(t, "loc: "+testID, "has content", hc, hasContent)
+	testhelper.DiffString(t, "loc: "+testID, "content", c, content)
 }
 
 func TestLoc(t *testing.T) {

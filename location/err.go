@@ -8,5 +8,5 @@ type Err struct {
 }
 
 func (e Err) Error() string {
-	return e.Msg + " (at " + e.Loc.String() + ")"
+	return e.Msg + "\nAt: " + e.Loc.String()
 }

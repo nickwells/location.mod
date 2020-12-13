@@ -15,14 +15,14 @@ func TestError(t *testing.T) {
 	}{
 		{
 			ID:     testhelper.MkID("nil"),
-			expStr: " (at :0)",
+			expStr: "\nAt: :0",
 		},
 		{
 			ID: testhelper.MkID("no Loc"),
 			e: Err{
 				Msg: "no Loc",
 			},
-			expStr: "no Loc (at :0)",
+			expStr: "no Loc\nAt: :0",
 		},
 		{
 			ID: testhelper.MkID("with Loc"),
@@ -30,16 +30,12 @@ func TestError(t *testing.T) {
 				Msg: "Msg",
 				Loc: *loc,
 			},
-			expStr: "Msg (at test:0)",
+			expStr: "Msg\nAt: test:0",
 		},
 	}
 
 	for _, tc := range testCases {
-		if s := tc.e.Error(); s != tc.expStr {
-			t.Log(tc.IDStr())
-			t.Errorf("\t: e.Error() should have returned '%s' not '%s'",
-				tc.expStr, s)
-		}
+		testhelper.DiffString(t, tc.IDStr(), "Error()", tc.e.Error(), tc.expStr)
 	}
 
 }
