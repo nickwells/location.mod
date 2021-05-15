@@ -1,8 +1,9 @@
 package location_test
 
 import (
-	"github.com/nickwells/location.mod/location"
 	"testing"
+
+	"github.com/nickwells/location.mod/location"
 )
 
 func TestChainDesc(t *testing.T) {

@@ -37,5 +37,4 @@ func TestError(t *testing.T) {
 	for _, tc := range testCases {
 		testhelper.DiffString(t, tc.IDStr(), "Error()", tc.e.Error(), tc.expStr)
 	}
-
 }
