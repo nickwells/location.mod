@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/nickwells/location.mod/location"
-	"github.com/nickwells/testhelper.mod/testhelper"
+	"github.com/nickwells/testhelper.mod/v2/testhelper"
 )
 
 func TestHasLoop(t *testing.T) {

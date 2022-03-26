@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/nickwells/location.mod/location"
-	"github.com/nickwells/testhelper.mod/testhelper"
+	"github.com/nickwells/testhelper.mod/v2/testhelper"
 )
 
 // checkStr confirms that the string is as expected and prints an error if
@@ -42,11 +42,12 @@ func TestLocString(t *testing.T) {
 // checkLocContents confirms that the string is as expected and prints an
 // error if not
 func checkLocContents(t *testing.T, loc *location.L,
-	testID, src, note, content string, hasContent bool, idx int64) {
+	testID, src, note, content string, hasContent bool, idx int64,
+) {
 	t.Helper()
 
 	testhelper.DiffString(t, "loc: "+testID, "source", loc.Source(), src)
-	testhelper.DiffInt64(t, "loc: "+testID, "idx", loc.Idx(), idx)
+	testhelper.DiffInt(t, "loc: "+testID, "idx", loc.Idx(), idx)
 	testhelper.DiffString(t, "loc: "+testID, "note", loc.Note(), note)
 	c, hc := loc.Content()
 	testhelper.DiffBool(t, "loc: "+testID, "has content", hc, hasContent)
@@ -76,7 +77,9 @@ func TestLoc(t *testing.T) {
 
 // checkErr confirms that the string is as expected and prints an error if
 // not
-func checkErr(t *testing.T, name string, expLoc location.L, expMsg string, err location.Err) {
+func checkErr(t *testing.T, name string,
+	expLoc location.L, expMsg string, err location.Err,
+) {
 	t.Helper()
 	if err.Msg != expMsg {
 		t.Log(name)

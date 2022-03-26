@@ -3,7 +3,7 @@ package location
 import (
 	"testing"
 
-	"github.com/nickwells/testhelper.mod/testhelper"
+	"github.com/nickwells/testhelper.mod/v2/testhelper"
 )
 
 func TestError(t *testing.T) {
