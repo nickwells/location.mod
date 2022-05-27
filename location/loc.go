@@ -78,7 +78,7 @@ func (l *L) SetNote(s string) {
 
 // Errorf constructs a location Err setting the Msg to the results of
 // formatting the arguments and the Loc to the location
-func (l L) Errorf(s string, args ...interface{}) Err {
+func (l L) Errorf(s string, args ...any) Err {
 	return Err{
 		Msg: fmt.Sprintf(s, args...),
 		Loc: l,
