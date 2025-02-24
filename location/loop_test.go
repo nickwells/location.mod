@@ -37,15 +37,17 @@ func TestHasLoop(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		testDesc := fmt.Sprintf("HasLoop('%s', %s)",
+		testDesc := fmt.Sprintf("HasLoop(%q, %s)",
 			tc.locName, tc.chain)
 		hasLoop, loopDesc := tc.chain.HasLoop(tc.locName)
+
 		if hasLoop != tc.expHasLoop {
 			t.Log(tc.IDStr())
 			t.Logf("\t : expected: %v\n", tc.expHasLoop)
 			t.Logf("\t :      got: %v\n", hasLoop)
 			t.Error("\t: " + testDesc)
 		}
+
 		if loopDesc != tc.expLoopDesc {
 			t.Log(tc.IDStr())
 			t.Logf("\t : expected loop description: %v\n", tc.expLoopDesc)

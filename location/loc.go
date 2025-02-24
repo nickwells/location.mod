@@ -27,7 +27,9 @@ func (l L) String() string {
 	if l.note != "" {
 		s = "[" + l.note + "]: "
 	}
+
 	s += fmt.Sprintf("%s:%d", l.name, l.idx)
+
 	if l.hasContent {
 		s += ": " + l.content
 	}
@@ -62,6 +64,7 @@ func (l L) Content() (string, bool) {
 	if !l.hasContent {
 		return "", false
 	}
+
 	return l.content, true
 }
 

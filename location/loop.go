@@ -6,18 +6,24 @@ package location
 // loop, otherwise it returns false and an empty string.
 func (chain LocChain) HasLoop(name string) (bool, string) {
 	var loopDesc string
-	incl := " --> "
+
 	var loopDetected bool
+
+	incl := " --> "
+
 	for _, l := range chain {
 		if l.name == name {
 			loopDetected = true
 			incl = " ==> "
 		}
+
 		loopDesc += l.String() + incl
 	}
+
 	if loopDetected {
 		loopDesc += "Back to " + name
 		return true, loopDesc
 	}
+
 	return false, ""
 }

@@ -11,6 +11,7 @@ import (
 // not
 func checkStr(t *testing.T, name, expectedStr, s string) {
 	t.Helper()
+
 	if s != expectedStr {
 		t.Log(name)
 		t.Log("\t: string-form should be: '" + expectedStr + "'")
@@ -81,12 +82,14 @@ func checkErr(t *testing.T, name string,
 	expLoc location.L, expMsg string, err location.Err,
 ) {
 	t.Helper()
+
 	if err.Msg != expMsg {
 		t.Log(name)
 		t.Log("\t: message should be: '" + expMsg + "'")
 		t.Log("\t: message       was: '" + err.Msg + "'")
 		t.Error("\t: unexpected Msg part of the error")
 	}
+
 	if err.Loc != expLoc {
 		t.Log(name)
 		t.Logf("\t: location should be: %s", expLoc)

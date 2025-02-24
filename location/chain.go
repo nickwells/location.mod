@@ -12,10 +12,12 @@ func NewChain() LocChain {
 // String provides a string representing a LocChain
 func (lc LocChain) String() string {
 	var chainDesc string
+
 	sep := ""
 	for _, l := range lc {
 		chainDesc += sep + l.String()
 		sep = " --> "
 	}
+
 	return chainDesc
 }
