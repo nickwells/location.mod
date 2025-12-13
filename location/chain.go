@@ -1,5 +1,7 @@
 package location
 
+import "strings"
+
 // LocChain represents a chain of locations. This might be used to record a
 // string of included files.
 type LocChain []L
@@ -11,13 +13,15 @@ func NewChain() LocChain {
 
 // String provides a string representing a LocChain
 func (lc LocChain) String() string {
-	var chainDesc string
+	var chainDesc strings.Builder
 
 	sep := ""
 	for _, l := range lc {
-		chainDesc += sep + l.String()
+		chainDesc.WriteString(sep)
+		chainDesc.WriteString(l.String())
+
 		sep = " --> "
 	}
 
-	return chainDesc
+	return chainDesc.String()
 }
