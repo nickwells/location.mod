@@ -16,7 +16,8 @@ type L struct {
 	note       string
 }
 
-// New returns a new instance of a location
+// New returns a new instance of a location. The supplied name is the value
+// that will be returned by the L.Source method.
 func New(name string) *L {
 	return &L{name: name}
 }
@@ -49,7 +50,9 @@ func (l L) Idx() int64 {
 	return l.idx
 }
 
-// Source returns the named source
+// Source returns the named source. This might be the file name or some other
+// identifier of the stream of data within which we are recording the
+// location.
 func (l L) Source() string {
 	return l.name
 }
